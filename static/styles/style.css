@@ -23,10 +23,16 @@ div.inputs {
   width: 100%;
   margin-left: 1%;
 }
-.values {
-  width: 60%;
+#id_prize_name, #choice{
+  width: 55%;
 }
-.prb {
+#shop_name {
+  margin-top: 10px;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+#weight, #id_probability {
   width: 25%;
   margin-right: 10px;
 }
@@ -35,6 +41,12 @@ label.divider{
   font-size: 30px;
   font-weight: bold;
   color: black;
+}
+input#updateInfo{
+  border: none;
+  width: 70%;
+  background-color: #000;
+  color: #fdcf3b;
 }
 footer {
   top: 99%;
@@ -81,6 +93,7 @@ div.inputsDiv > input{
   margin-bottom: 20px ;
 }
 .deleteImage {
+  margin-bottom: 3px;
   margin-left: 5px;
   background-color: black;
   border: none;
@@ -90,7 +103,7 @@ div.inputsDiv > input{
   color: red;
   font-size:larger;
 }
-button#add-choice{
+input#add-choice{
   background-color: black;
   border: none;
   border-radius: 5px;
@@ -465,14 +478,21 @@ button.donebtn {
   #spin-btn{
     font-size: 17px;
   }
+  label[for="id_probability"], label[for="id_prize_name"] {
+    display: none;
+  }
   #final-value{
     font-size: 20px;
     left: 23%;
   }
-  button#add-choice{
+  input#add-choice{
     width: 50%;
     margin-top: 20px;
     margin-left: 23%;
+  }
+  #updateInfo{
+    overflow: auto;
+    margin-bottom: 50px;
   }
 input::placeholder {
     font-size: 12px;
@@ -481,9 +501,13 @@ input::placeholder {
   width: 25px;
   height: 25px;
 }
+
 div.inputsDiv > input{
   margin-top: 55px;
   margin-bottom: 0px;
+}
+#inputs{
+  margin-top: 20px;
 }
 }
 @media only screen and (max-width: 520px) {
@@ -508,6 +532,11 @@ div.inputsDiv > input{
   }
   #final-value{
     left: 18%;
+  }
+}
+@media only screen and (max-width: 435px) {
+  #inputs{
+    margin-top: 60px;
   }
 }
 @media only screen and (max-width: 420px) {
@@ -621,6 +650,9 @@ div.Headers > label:nth-child(1) {
     width: 25px;
     height: 25px;
     left: 90%;
+  }
+  #inputs{
+    margin-top: 90px;
   }
 }
 @media only screen and (max-width: 200px) {

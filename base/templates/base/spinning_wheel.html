@@ -5,6 +5,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Spin Wheel App</title>
     <!-- Google Font -->
     <link
@@ -14,13 +16,11 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="{% static 'styles/style.css' %}">
   </head>
-  {% if request.user.is_authenticated %}
-  <div class="navbar" style=" width: 100%; height: 5%; position: absolute;">
-    <!-- <center><h3 style="background-color: black; position: relative;">By Maximal Solutions</h3></center> -->
-    <button style="left: 95%; position: absolute; background-color: transparent; border: 0px;"> <a href="{% url 'logout' %}" style="color: whitesmoke; text-decoration: none;">Logout</a></button>
-  {% endif %}
   </div>
   <body>
+    {% block content %}
+   <a href="{% url 'logout' %}" style="color: whitesmoke; text-decoration: none; width: 60px; height: 60px;left: 94%; position: absolute; background-color: transparent; border: 0px;">Logout</a>
+    <div><center><h3 id="shop_name">Welcome to {{shope_name}}</h3></center></div>
     <div class="wrapper">
       <div class="container">
         <canvas id="wheel"></canvas>
@@ -32,22 +32,33 @@
       </div>
     </div>
     <div class="input-container" id="input-container">
-      <img src="{% static 'images/openedEye.png' %}" alt="openedEye" id="openedEye" onclick="showInputsfnc();"/>
+      <a href="{% url 'logout' %}"><img src="{% static 'images/openedEye.png' %}" alt="openedEye" id="openedEye" onclick="showInputsfnc();"/></a>
       <img src="{% static 'images/closedEye.png' %}" alt="closedEye" id="closedEye" onclick="hideInputsfnc();"/>
-      <form action="#" id="inputForm">
-      <div class="Headers">
+      <div class="Headers" id="Headers">
         <label for="">Probability(%)</label>
         <label for="">Prize Name</label>
       </div>
       <div class="inputs-header">
-        <input type="number" id="weight"  class="prb" name="weight" required placeholder="Enter number">
-        <input type="text" id="choice"  class="values" name = "values" required placeholder="Enter text here">
-        <button id="add-choice" onclick="displayMessage();" type="submit">+</button>
+        <form method="POST" novalidate action="" id="inputForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" name="addInfo" id="add-choice" onclick="displayMessage();" value="+">
          <center><label for="" class="divider">- - - - - - - - - - - - - - -</label></center>
+        </form>
+      </div>
+      <form action="" method="POST" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+        <center><input type="submit" name="updateInfo" id="updateInfo" value="Update"></center>
+      <div class="inputs" id="inputs">
+        {% for info in wheelInfo %}
+        <div>
+          <input type="number" id="weight" name="weight" value="{{info.probability}}">
+          <input type="text" id="choice" name="choice" value="{{info.prize_name}}">
+          <input type="submit" name="{{info.id}}" id="counter" class="deleteImage" value="X">
+        </div>
+        {%endfor%}
       </div>
     </form>
-      <div class="inputs" id="inputs">
-      </div>
   </div>
 
   <div id="myModal" class="modal">
@@ -66,21 +77,190 @@
     </div>
   
   </div>
-  
     <!-- Chart JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <!-- Chart JS Plugin for displaying text over chart -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
     <!-- Script -->
-    <script src="{% static 'functionality/script.js' %}"></script>
     
+    {% endblock content %}
   </body>
-  <!-- <footer>
-    <center>
-      <div>
-    <h4>By Maximal Solutions</h4>
-    <h6> Copyright © 2023 all rights reserved </h6>
-      </div>
-    </center>
-  </footer> -->
+ 
 </html>
+
+<script>
+
+var prizesName = [] , percentages = [] , colors = ['#011d4a', '#8b35bc', '#a7a4fc', '#7163da'], pieColors = ['#011d4a'], data1 = [] , SizeOfPie = 0, minimumDeg = 0, maximumDeg = 0,
+  minDegree = 0, maxDegree = 360, rotationValues = [], counter = 0, winnerDegree = 0, winner = 0 , angle = 0
+prizesName = "{{prize_name | safe }}";
+percentages = "{{probability | safe }}";
+console.log(percentages)
+
+prizesName = prizesName.replace(/['‘’"“”]/g, '')
+prizesName = prizesName.split(', ')
+percentages = percentages.split(', ')
+pieColors = []
+SizeOfPie = 100 / prizesName.length  
+angle = maxDegree / prizesName.length
+for(let i = 0; i < prizesName.length; i++){
+  counter+=1
+  if (i == 0){
+    prizesName[i] = prizesName[i].replace('[','')
+    percentages[i] = percentages[i].replace('[','')
+  }
+  else if (i == prizesName.length - 1){
+    prizesName[i] = prizesName[i].replace(']','') 
+    percentages[i] = percentages[i].replace(']','')
+  }
+  pieColors.push(colors[i % 4])
+  data1.push(SizeOfPie)
+  if(counter == 1){
+      minimumDeg = minDegree
+      maximumDeg = (angle * counter) - 1
+      rotationValues.push({ minDegree: minimumDeg, maxDegree: maximumDeg, value: prizesName[i], prob: percentages[i] })
+    }
+    else{
+      minimumDeg = angle * (i)
+      maximumDeg = minimumDeg + angle - 1
+      rotationValues.push({ minDegree: minimumDeg, maxDegree: maximumDeg, value: prizesName[i], prob: percentages[i] })
+    }
+}
+
+const HeadersTitle = document.getElementById("Headers");
+const update_info = document.getElementById('updateInfo');
+const wheel = document.getElementById("wheel");
+const spinBtn = document.getElementById("spin-btn");
+const finalValue = document.getElementById("final-value");
+const result =  document.getElementById("results");
+const hideInputs = document.getElementById("inputForm")
+const inputContainer = document.getElementById("input-container")
+const inputss = document.getElementById("inputs")
+const showEye = document.getElementById("openedEye")
+const hideEye = document.getElementById("closedEye")
+var modal = document.getElementById("myModal");
+var span = document.getElementsByClassName("close")[0];
+
+
+
+let values = []
+let weights = []
+var colors = ['#011d4a', '#8b35bc', '#a7a4fc', '#7163da']
+//Object that stores values of minimum and maximum angle for a value
+
+let myChart = new Chart(wheel, {
+  //Plugin for displaying text on pie chart
+  plugins: [ChartDataLabels],
+  //Chart Type Pie
+  type: "pie",
+  data: {
+    //Labels(values which are to be displayed on chart)
+    labels: prizesName,
+    //Settings for dataset/pie
+    datasets: [
+      {
+        backgroundColor: pieColors,
+        data: data1,
+      },
+    ],
+  },
+  options: {
+    //Responsive chart
+    responsive: true,
+    animation: { duration: 0 },
+    plugins: {
+      //hide tooltip and legend
+      tooltip: false,
+      legend: {
+        display: false,
+      },
+      //display labels inside pie chart
+      datalabels: {
+        color: "#ffffff",
+        formatter: (_, context) => context.chart.data.labels[context.dataIndex],
+        font: { size: 24 },
+      },
+    },
+  },
+});
+span.onclick = function() {
+  modal.style.display = "none";
+}
+function hideInputsfnc() {
+  HeadersTitle.style.display = "none";
+  update_info.style.display = "none";
+  hideInputs.style.display = "none";
+  showEye.style.display = "block";
+  hideEye.style.display = "none";
+  inputss.style.display = "none"
+  inputContainer.style.border = "none";
+}
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+function closeForm(){
+  modal.style.display = "none";
+}
+//display value based on the randomAngle
+const valueGenerator = (angleValue) => {
+  for (let i of rotationValues) {
+    //if the angleValue is between min and max then display it
+    if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
+      modal.style.display = "block";
+      result.innerHTML = `<h1>You Won ${i.value}</h1>`;
+      spinBtn.disabled = false;
+      break;
+    }
+  }
+};
+
+//Spinner count
+let count = 0;
+//100 rotations for animation and last rotation for result
+let resultValue = 101;
+//Start spinning
+spinBtn.addEventListener("click", () => {
+  spinBtn.disabled = true;
+  //Empty final value
+  finalValue.innerHTML = `<p>Good Luck!</p>`;
+  // Generate random degrees to stop at
+  let randomNumber = Math.floor(Math.random() * 101)
+  let cumulativePorb = 0;
+  let FinalDegree = 0;
+  for(let i = 0; i < prizesName.length; i++) {
+    cumulativePorb+= parseInt(percentages[i])
+    if(randomNumber <= cumulativePorb){
+      FinalDegree = Math.floor((rotationValues[i].maxDegree - rotationValues[i].minDegree) / 2) +  rotationValues[i].minDegree
+      winner = i + 1
+      break;
+    }
+  }
+  if( winner == 1){
+    winnerDegree = 1
+   }
+   else {
+    winnerDegree = Math.floor(((360 / counter) * (percentages.length + 1 - winner)) + (Math.floor(0.3 * counter) + 1) * 20)
+   }
+  //Interval for rotation animation
+  let rotationInterval = window.setInterval(() => {
+ 
+    myChart.options.rotation = myChart.options.rotation + resultValue;
+    //Update chart with new value;
+    myChart.update();
+    //If rotation>360 reset it back to 0
+    if (myChart.options.rotation >= 360) {
+      count += 1;
+      resultValue -= 5;
+      myChart.options.rotation = 0;
+    } else if (count > 15 && myChart.options.rotation == winnerDegree) {
+      valueGenerator(FinalDegree);
+      clearInterval(rotationInterval);
+      count = 0;
+      resultValue = 101;
+    }
+  }, 10);
+  
+});
+
+</script>

@@ -76,6 +76,7 @@ function showInputsfnc() {
   hideInputs.style.display = "block";
   showEye.style.display = "none";
   inputContainer.style.border = "4px solid white";
+  
 }
 
 window.onclick = function(event) {

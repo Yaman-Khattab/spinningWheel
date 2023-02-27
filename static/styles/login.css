@@ -8,14 +8,25 @@
 }
 body
 {
-    background-image: url('images/wheel.png');
     background-size: cover;
     background-repeat:no-repeat;
     display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #23242a;
+}
+.MyHeader{
+ background-color:transparent;
+ position: absolute;
+ bottom: 85%;
+}
+.MyHeader h1, .MyHeader > center{
+    font-size: 45px;
+    color: aliceblue;
+    background-color:transparent;
 }
 .box
 {
@@ -87,7 +98,7 @@ animation-delay: -3s;
 .inputBox
 {
     position: relative;
-    width: 300px;
+    width: 100%;
     margin-top: 35px;
 }
 
@@ -165,4 +176,13 @@ input[type="submit"]:active
 {
     background: #23242a;
     color: #45f3ff;
+}
+@media only screen and (max-width: 400px) {
+  .box{
+    width: 300px;
+    height: 360px;
+  }
+  .MyHeader h1, .MyHeader > center{
+    font-size: 40px;
+}
 }
